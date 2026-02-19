@@ -237,6 +237,15 @@ input[readonly] {
   color: #d12f2f;
 }
 
+#login-form > .btn,
+#register-form > .btn {
+  width: 100%;
+  min-height: 54px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .topbar {
   margin-top: 0.6rem;
   padding: 0.95rem;
