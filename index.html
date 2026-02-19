@@ -32,11 +32,11 @@
       <form id="login-form" class="stack-lg">
         <label>
           <span>Username</span>
-          <input type="text" id="login-username" required />
+          <input type="text" id="login-username" required autocomplete="username" autocapitalize="off" autocorrect="off" spellcheck="false" />
         </label>
         <label>
           <span>Password</span>
-          <input type="password" id="login-password" required />
+          <input type="password" id="login-password" required autocomplete="current-password" />
         </label>
         <button type="submit" class="btn btn-primary">Login</button>
       </form>
@@ -44,11 +44,11 @@
       <form id="register-form" class="stack-lg hidden">
         <label>
           <span>Username</span>
-          <input type="text" id="register-username" minlength="3" maxlength="24" required />
+          <input type="text" id="register-username" minlength="3" maxlength="24" required autocomplete="username" autocapitalize="off" autocorrect="off" spellcheck="false" />
         </label>
         <label>
           <span>Password</span>
-          <input type="password" id="register-password" minlength="6" maxlength="64" required />
+          <input type="password" id="register-password" minlength="6" maxlength="64" required autocomplete="new-password" />
         </label>
         <button type="submit" class="btn btn-primary">Create account</button>
       </form>
@@ -107,11 +107,11 @@
             <span>New password (optional)</span>
             <input type="password" id="profile-password" minlength="6" maxlength="64" placeholder="Leave blank to keep current password" />
           </label>
-          <label>
+          <label id="profile-avatar-label">
             <span>Avatar image</span>
             <input type="file" id="profile-avatar" accept="image/*" />
           </label>
-          <div class="profile-preview-row">
+          <div id="profile-preview-row" class="profile-preview-row">
             <span class="muted tiny">Preview:</span>
             <div id="profile-avatar-preview" class="avatar avatar-lg"></div>
           </div>
@@ -183,6 +183,11 @@
     </section>
   </main>
 
+  <script nomodule src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script nomodule src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script nomodule src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <script nomodule src="./firebase-config.legacy.js"></script>
+  <script nomodule src="./app-legacy.js"></script>
   <script type="module" src="./app.js"></script>
 </body>
 </html>

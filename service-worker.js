@@ -1,11 +1,12 @@
 "use strict";
 
-const CACHE_VERSION = "ipl-predictor-v2";
+const CACHE_VERSION = "ipl-predictor-v4";
 const APP_SHELL = [
   "./",
   "./index.html",
   "./style.css",
   "./app.js",
+  "./app-legacy.js",
   "./firebase-config.js",
   "./manifest.json",
   "./icons/favicon-32.png",

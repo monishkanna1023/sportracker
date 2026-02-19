@@ -1,32 +1,172 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
-import {
-  getAuth,
-  onAuthStateChanged,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  signOut,
-  updatePassword,
-} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
-import {
-  getFirestore,
-  collection,
-  doc,
-  addDoc,
-  setDoc,
-  updateDoc,
-  getDoc,
-  getDocs,
-  writeBatch,
-  onSnapshot,
-  serverTimestamp,
-  Timestamp,
-  increment,
-  runTransaction,
-  query,
-  where,
-} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
-import { firebaseConfig } from "./firebase-config.js";
+"use strict";
 
+(function () {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  function showLegacyError(message) {
+    var errorNode = document.querySelector("#auth-error");
+    if (errorNode) {
+      errorNode.textContent = message;
+      return;
+    }
+    if (typeof alert === "function") {
+      alert(message);
+    }
+  }
+
+  if (typeof firebase === "undefined") {
+    showLegacyError("Firebase compat SDK failed to load. Please refresh or use a newer browser.");
+    return;
+  }
+
+  if (!window.firebaseConfig) {
+    showLegacyError("Missing firebase-config.legacy.js. Copy your firebase-config.js values into firebase-config.legacy.js.");
+    return;
+  }
+
+  var firebaseConfig = window.firebaseConfig;
+
+  function adaptDocSnapshot(snapshot) {
+    return {
+      id: snapshot.id,
+      ref: snapshot.ref,
+      data: function () {
+        return snapshot.data();
+      },
+      exists: function () {
+        return !!snapshot.exists;
+      }
+    };
+  }
+
+  function adaptQuerySnapshot(snapshot) {
+    return {
+      docs: snapshot.docs.map(adaptDocSnapshot)
+    };
+  }
+
+  function initializeApp(config) {
+    if (firebase.apps && firebase.apps.length) {
+      return firebase.app();
+    }
+    return firebase.initializeApp(config);
+  }
+
+  function getAuth(appInstance) {
+    return firebase.auth(appInstance);
+  }
+
+  function onAuthStateChanged(auth, callback) {
+    return auth.onAuthStateChanged(callback);
+  }
+
+  function createUserWithEmailAndPassword(auth, email, password) {
+    return auth.createUserWithEmailAndPassword(email, password);
+  }
+
+  function signInWithEmailAndPassword(auth, email, password) {
+    return auth.signInWithEmailAndPassword(email, password);
+  }
+
+  function signOut(auth) {
+    return auth.signOut();
+  }
+
+  function updatePassword(user, newPassword) {
+    return user.updatePassword(newPassword);
+  }
+
+  function getFirestore(appInstance) {
+    return firebase.firestore(appInstance);
+  }
+
+  function collection(db, path) {
+    return db.collection(path);
+  }
+
+  function doc(parent) {
+    var segments = Array.prototype.slice.call(arguments, 1);
+    var fullPath = segments.join("/");
+    if (!parent || typeof parent.doc !== "function") {
+      throw new Error("Invalid document reference");
+    }
+    return parent.doc(fullPath);
+  }
+
+  function addDoc(collectionRef, data) {
+    return collectionRef.add(data);
+  }
+
+  function setDoc(docRef, data) {
+    return docRef.set(data);
+  }
+
+  function updateDoc(docRef, data) {
+    return docRef.update(data);
+  }
+
+  function getDoc(docRef) {
+    return docRef.get().then(adaptDocSnapshot);
+  }
+
+  function getDocs(queryRef) {
+    return queryRef.get().then(adaptQuerySnapshot);
+  }
+
+  function writeBatch(db) {
+    return db.batch();
+  }
+
+  function onSnapshot(ref, onNext, onError) {
+    return ref.onSnapshot(function (snapshot) {
+      if (snapshot && Array.isArray(snapshot.docs)) {
+        onNext(adaptQuerySnapshot(snapshot));
+        return;
+      }
+      onNext(adaptDocSnapshot(snapshot));
+    }, onError);
+  }
+
+  function serverTimestamp() {
+    return firebase.firestore.FieldValue.serverTimestamp();
+  }
+
+  var Timestamp = firebase.firestore.Timestamp;
+
+  function increment(value) {
+    return firebase.firestore.FieldValue.increment(value);
+  }
+
+  function runTransaction(db, updateFn) {
+    return db.runTransaction(function (transaction) {
+      var wrappedTransaction = {
+        get: function (docRef) {
+          return transaction.get(docRef).then(adaptDocSnapshot);
+        },
+        update: function (docRef, data) {
+          return transaction.update(docRef, data);
+        }
+      };
+      return updateFn(wrappedTransaction);
+    });
+  }
+
+  function where(field, op, value) {
+    return {
+      field: field,
+      op: op,
+      value: value
+    };
+  }
+
+  function query(ref) {
+    var clauses = Array.prototype.slice.call(arguments, 1);
+    return clauses.reduce(function (current, clause) {
+      return current.where(clause.field, clause.op, clause.value);
+    }, ref);
+  }
 const POLL_MS = 15000;
 const USERNAME_MIN = 3;
 const USERNAME_MAX = 24;
@@ -1643,3 +1783,5 @@ async function onetimeWinnerPredictions(matchId, winningTeam) {
   const snapshot = await getDocs(predictionsQuery);
   return snapshot.docs.filter((docSnap) => String(docSnap.data().teamName || "") === winningTeam);
 }
+
+})();

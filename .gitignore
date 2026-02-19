@@ -16,6 +16,7 @@ pnpm-debug.log*
 .env.*
 !.env.example
 firebase-config.js
+firebase-config.legacy.js
 *service-account*.json
 *.pem
 *.p12
@@ -29,4 +30,3 @@ coverage/
 # Firebase local tooling artifacts
 .firebase/
 firebase-debug.log
-
