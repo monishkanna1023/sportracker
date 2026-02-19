@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#0b1f66" />
+  <meta name="description" content="Track IPL match predictions with live group picks and leaderboard scoring." />
+  <title>IPL Prediction Tracker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Sora:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet" />
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="icon" type="image/png" sizes="32x32" href="./icons/favicon-32.png" />
+  <link rel="icon" type="image/png" href="./icons/favicon-ipl.png" />
+  <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png" />
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <div class="bg-shape bg-shape-1"></div>
+  <div class="bg-shape bg-shape-2"></div>
+
+  <main class="app-shell">
+    <section id="auth-view" class="panel auth-panel">
+      <h1>IPL Prediction Tracker</h1>
+      <p class="muted">Create your account, place your picks, and climb the leaderboard.</p>
+
+      <div class="tab-row">
+        <button class="tab-btn active" data-auth-tab="login">Login</button>
+        <button class="tab-btn" data-auth-tab="register">Register</button>
+      </div>
+
+      <form id="login-form" class="stack-lg">
+        <label>
+          <span>Username</span>
+          <input type="text" id="login-username" required />
+        </label>
+        <label>
+          <span>Password</span>
+          <input type="password" id="login-password" required />
+        </label>
+        <button type="submit" class="btn btn-primary">Login</button>
+      </form>
+
+      <form id="register-form" class="stack-lg hidden">
+        <label>
+          <span>Username</span>
+          <input type="text" id="register-username" minlength="3" maxlength="24" required />
+        </label>
+        <label>
+          <span>Password</span>
+          <input type="password" id="register-password" minlength="6" maxlength="64" required />
+        </label>
+        <button type="submit" class="btn btn-primary">Create account</button>
+      </form>
+
+      <p class="muted tiny">Firebase mode: promote one registered user to <code>admin</code> role in Firestore.</p>
+      <p id="auth-error" class="error-msg"></p>
+    </section>
+
+    <section id="app-view" class="hidden">
+      <header class="topbar panel">
+        <div class="user-pill">
+          <div id="header-avatar" class="avatar"></div>
+          <div>
+            <p id="header-username" class="user-name"></p>
+            <p id="header-role" class="muted tiny"></p>
+          </div>
+        </div>
+        <div class="topbar-actions">
+          <button class="nav-btn active" data-section="dashboard-section">Dashboard</button>
+          <button class="nav-btn" data-section="leaderboard-section">Leaderboard</button>
+          <button class="nav-btn" data-section="settings-section">Settings</button>
+          <button id="admin-nav-btn" class="nav-btn hidden" data-section="admin-section">Admin</button>
+          <button id="admin-users-nav-btn" class="nav-btn hidden" data-section="admin-users-section">Manage Users</button>
+          <button id="install-btn" class="btn btn-ghost hidden">Install App</button>
+          <button id="logout-btn" class="btn btn-ghost">Logout</button>
+        </div>
+      </header>
+
+      <section id="dashboard-section" class="panel section-view">
+        <div class="section-title-row">
+          <h2>Matches & Voting Lobby</h2>
+          <p class="muted">Upcoming matches stay editable until official start time.</p>
+        </div>
+        <div id="matches-list" class="match-grid"></div>
+      </section>
+
+      <section id="leaderboard-section" class="panel section-view hidden">
+        <div class="section-title-row">
+          <h2>Leaderboard</h2>
+          <p class="muted">Points are updated immediately after admin declares results.</p>
+        </div>
+        <div id="leaderboard-list" class="leaderboard-list"></div>
+      </section>
+
+      <section id="settings-section" class="panel section-view hidden">
+        <div class="section-title-row">
+          <h2>Settings</h2>
+          <p class="muted">Update profile and access account actions.</p>
+        </div>
+        <form id="profile-form" class="stack-lg profile-form">
+          <label>
+            <span>Username</span>
+            <input type="text" id="profile-username" readonly />
+          </label>
+          <label>
+            <span>New password (optional)</span>
+            <input type="password" id="profile-password" minlength="6" maxlength="64" placeholder="Leave blank to keep current password" />
+          </label>
+          <label>
+            <span>Avatar image</span>
+            <input type="file" id="profile-avatar" accept="image/*" />
+          </label>
+          <div class="profile-preview-row">
+            <span class="muted tiny">Preview:</span>
+            <div id="profile-avatar-preview" class="avatar avatar-lg"></div>
+          </div>
+          <button type="submit" class="btn btn-primary">Save profile</button>
+        </form>
+        <div class="settings-actions">
+          <button id="settings-install-btn" class="btn btn-ghost" type="button">Install App</button>
+          <button id="settings-admin-btn" class="btn btn-ghost hidden" type="button">Admin Dashboard</button>
+          <button id="settings-users-btn" class="btn btn-ghost hidden" type="button">Manage Users</button>
+          <button id="settings-logout-btn" class="btn btn-danger" type="button">Logout</button>
+        </div>
+      </section>
+
+      <section id="admin-section" class="panel section-view hidden">
+        <div class="section-title-row">
+          <h2>Admin Dashboard</h2>
+          <p class="muted">Create fixtures, publish winner, or mark matches as abandoned.</p>
+        </div>
+        <form id="create-match-form" class="match-form">
+          <label>
+            <span>Team A</span>
+            <input type="text" id="team-a" required />
+          </label>
+          <label>
+            <span>Team B</span>
+            <input type="text" id="team-b" required />
+          </label>
+          <label>
+            <span>Start time</span>
+            <input type="datetime-local" id="start-time" required />
+          </label>
+          <button type="submit" class="btn btn-primary">Create Fixture</button>
+        </form>
+
+        <div id="admin-match-list" class="stack-lg"></div>
+      </section>
+
+      <section id="admin-users-section" class="panel section-view hidden">
+        <div class="section-title-row">
+          <h2>Manage Users</h2>
+          <p class="muted">Remove member accounts from gameplay (Spark-safe soft delete).</p>
+        </div>
+        <div id="admin-users-list" class="stack-lg"></div>
+      </section>
+
+      <nav class="mobile-tabbar" aria-label="Primary">
+        <button class="mobile-tab-btn" type="button" data-section="dashboard-section">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4.5 10.8 12 4l7.5 6.8V20a1 1 0 0 1-1 1h-4.9v-5.2h-3.2V21H5.5a1 1 0 0 1-1-1z"></path>
+          </svg>
+          <span>Home</span>
+        </button>
+        <button class="mobile-tab-btn" type="button" data-section="leaderboard-section">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M7 4h10v4a4 4 0 0 1-4 4h-2a4 4 0 0 1-4-4z"></path>
+            <path d="M7 6H5a2 2 0 0 0 2 3M17 6h2a2 2 0 0 1-2 3"></path>
+            <path d="M12 12v3M9 18h6M8.4 20h7.2"></path>
+          </svg>
+          <span>Leaderboard</span>
+        </button>
+        <button class="mobile-tab-btn" type="button" data-section="settings-section">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.08a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h.08a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v.08a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+          <span>Settings</span>
+        </button>
+      </nav>
+    </section>
+  </main>
+
+  <script type="module" src="./app.js"></script>
+</body>
+</html>

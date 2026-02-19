@@ -1,0 +1,91 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function userDoc(uid) {
+      return get(/databases/$(database)/documents/users/$(uid));
+    }
+
+    function isAdmin() {
+      return signedIn() && userDoc(request.auth.uid).data.role == "admin";
+    }
+
+    function matchDoc(matchId) {
+      return get(/databases/$(database)/documents/matches/$(matchId));
+    }
+
+    function matchExists(matchId) {
+      return exists(/databases/$(database)/documents/matches/$(matchId));
+    }
+
+    function matchIsOpenForVoting(matchId) {
+      return matchDoc(matchId).data.status == "upcoming" &&
+        request.time < matchDoc(matchId).data.startTime;
+    }
+
+    function hasValidAvatarData(data) {
+      return !("avatarData" in data) || (
+        data.avatarData is string &&
+        data.avatarData.size() <= 200000
+      );
+    }
+
+    function isActiveParticipant(uid) {
+      let data = userDoc(uid).data;
+      return data.role != "admin" && (!("deleted" in data) || data.deleted != true);
+    }
+
+    match /users/{userId} {
+      allow read: if signedIn();
+
+      allow create: if signedIn() &&
+        request.auth.uid == userId &&
+        request.resource.data.username is string &&
+        request.resource.data.usernameLower is string &&
+        request.resource.data.role == "member" &&
+        request.resource.data.deleted == false &&
+        request.resource.data.points == 0 &&
+        hasValidAvatarData(request.resource.data);
+
+      allow update: if isAdmin() || (
+        signedIn() &&
+        request.auth.uid == userId &&
+        hasValidAvatarData(request.resource.data) &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          "avatarData",
+          "updatedAt"
+        ])
+      );
+
+      allow delete: if false;
+    }
+
+    match /matches/{matchId} {
+      allow read: if signedIn();
+      allow create, update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    match /predictions/{predictionId} {
+      allow read: if signedIn();
+
+      allow create, update: if signedIn() &&
+        predictionId == request.resource.data.matchId + "_" + request.auth.uid &&
+        isActiveParticipant(request.auth.uid) &&
+        request.resource.data.userId == request.auth.uid &&
+        request.resource.data.matchId is string &&
+        request.resource.data.teamName is string &&
+        matchExists(request.resource.data.matchId) &&
+        request.resource.data.teamName in [
+          matchDoc(request.resource.data.matchId).data.teamA,
+          matchDoc(request.resource.data.matchId).data.teamB
+        ] &&
+        matchIsOpenForVoting(request.resource.data.matchId);
+
+      allow delete: if isAdmin();
+    }
+  }
+}
