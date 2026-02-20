@@ -822,28 +822,27 @@ function renderMatches() {
     header.className = "match-head";
 
     const titleWrap = document.createElement("div");
-    const title = createMatchTitleElement(match.teamA, match.teamB);
+    titleWrap.className = "match-title-wrap";
+    const winnerCode = matchStatus === "completed" ? normalizeTeamCode(match.winner) : "";
+    const title = createMatchTitleElement(match.teamA, match.teamB, winnerCode);
     titleWrap.appendChild(title);
+    header.appendChild(titleWrap);
+    card.appendChild(header);
+
+    const metaRow = document.createElement("div");
+    metaRow.className = "match-meta-row";
 
     const time = document.createElement("p");
-    time.className = "muted tiny";
+    time.className = "muted tiny match-start-time";
     time.textContent = `Start: ${formatDate(match.startTime)} (${countdownText(match.startTime, matchStatus)})`;
-    titleWrap.appendChild(time);
+    metaRow.appendChild(time);
 
     const status = document.createElement("span");
     status.className = `badge ${statusClass(matchStatus)}`;
     status.textContent = statusLabel(matchStatus);
+    metaRow.appendChild(status);
 
-    header.appendChild(titleWrap);
-    header.appendChild(status);
-    card.appendChild(header);
-
-    if (matchStatus === "completed" && match.winner) {
-      const winner = document.createElement("p");
-      winner.className = "tiny";
-      winner.textContent = `Winner: ${match.winner}`;
-      card.appendChild(winner);
-    }
+    card.appendChild(metaRow);
 
     if (matchStatus === "completed_no_result") {
       const noResult = document.createElement("p");
@@ -879,54 +878,44 @@ function renderMatches() {
       card.appendChild(voteRow);
     }
 
-    const voteHelp = document.createElement("p");
-    voteHelp.className = "tiny muted";
-    if (!currentUserIsParticipant) {
-      voteHelp.textContent = "Admin accounts do not participate in voting.";
-    } else if (canVote) {
-      voteHelp.textContent = currentPick
-        ? `Your pick: ${currentPick} (editable until start time)`
-        : "No pick yet. Select a team.";
-    } else if (matchStatus === "live") {
-      voteHelp.textContent = "Voting is locked because the match is now live.";
-    } else {
-      voteHelp.textContent = currentPick ? `Final pick: ${currentPick}` : "No pick was submitted.";
+    if (currentUserIsParticipant) {
+      const voteHelp = document.createElement("p");
+      voteHelp.className = "tiny muted";
+      if (canVote) {
+        voteHelp.textContent = currentPick
+          ? `Your pick: ${currentPick} (editable until start time)`
+          : "No pick yet. Select a team.";
+      } else if (matchStatus === "live") {
+        voteHelp.textContent = "Voting is locked because the match is now live.";
+      } else {
+        voteHelp.textContent = currentPick ? `Final pick: ${currentPick}` : "No pick was submitted.";
+      }
+      card.appendChild(voteHelp);
     }
-    card.appendChild(voteHelp);
-
-    const lobbyTitle = document.createElement("p");
-    lobbyTitle.className = "lobby-title";
-    lobbyTitle.textContent = "Voting lobby";
-    card.appendChild(lobbyTitle);
-
-    const lobbyList = document.createElement("div");
-    lobbyList.className = "lobby-list";
 
     const usersSorted = getParticipantUsers().sort((a, b) => a.username.localeCompare(b.username));
-    if (!usersSorted.length) {
-      const empty = document.createElement("p");
-      empty.className = "tiny muted";
-      empty.textContent = "No active member accounts yet.";
-      card.appendChild(empty);
-      dom.matchesList.appendChild(card);
-      continue;
+    if (usersSorted.length) {
+      const teamACode = normalizeTeamCode(match.teamA);
+      const teamBCode = normalizeTeamCode(match.teamB);
+      const teamAVoters = [];
+      const teamBVoters = [];
+
+      usersSorted.forEach((user) => {
+        const pickCode = normalizeTeamCode(getPrediction(match.id, user.id));
+        if (pickCode === teamACode) {
+          teamAVoters.push(user);
+        } else if (pickCode === teamBCode) {
+          teamBVoters.push(user);
+        }
+      });
+
+      const lobbyGrid = document.createElement("div");
+      lobbyGrid.className = "lobby-team-grid";
+      lobbyGrid.appendChild(createLobbyTeamGroup(teamACode, teamAVoters));
+      lobbyGrid.appendChild(createLobbyTeamGroup(teamBCode, teamBVoters));
+      card.appendChild(lobbyGrid);
     }
 
-    usersSorted.forEach((user) => {
-      const pick = getPrediction(match.id, user.id);
-      const row = document.createElement("div");
-      row.className = "lobby-item";
-      row.appendChild(createAvatarElement(user));
-
-      const label = document.createElement("p");
-      label.className = "tiny";
-      label.textContent = pick || "No pick yet";
-      row.appendChild(label);
-
-      lobbyList.appendChild(row);
-    });
-
-    card.appendChild(lobbyList);
     dom.matchesList.appendChild(card);
   }
 }
@@ -1621,17 +1610,87 @@ function statusClass(status) {
   return "no-result";
 }
 
-function createMatchTitleElement(teamA, teamB) {
+function createLobbyTeamGroup(teamCode, voters) {
+  const group = document.createElement("div");
+  group.className = "lobby-team-group";
+
+  const bucket = document.createElement("div");
+  bucket.className = "lobby-team-bucket";
+
+  if (!voters.length) {
+    bucket.classList.add("lobby-team-bucket-empty");
+    const centerLogo = createTeamLogoNode(teamCode);
+    centerLogo.classList.add("lobby-team-logo", "lobby-team-logo-center");
+    bucket.appendChild(centerLogo);
+    group.appendChild(bucket);
+    return group;
+  }
+
+  const left = document.createElement("div");
+  left.className = "lobby-team-left";
+  const logoNode = createTeamLogoNode(teamCode);
+  logoNode.classList.add("lobby-team-logo");
+  left.appendChild(logoNode);
+  bucket.appendChild(left);
+
+  const preview = document.createElement("div");
+  preview.className = "lobby-team-preview";
+  if (voters.length) {
+    preview.appendChild(createLobbyAvatarStack(voters, 4));
+  }
+  bucket.appendChild(preview);
+
+  const count = document.createElement("span");
+  count.className = "lobby-team-count-badge";
+  count.textContent = String(voters.length);
+  bucket.appendChild(count);
+
+  group.appendChild(bucket);
+  return group;
+}
+
+function createLobbyAvatarStack(voters, limit) {
+  const stack = document.createElement("div");
+  stack.className = "lobby-avatar-stack";
+
+  const visible = voters.slice(0, limit);
+  visible.forEach((user) => {
+    const avatar = createAvatarElement(user);
+    avatar.classList.add("lobby-stack-avatar");
+    avatar.title = user.username;
+    stack.appendChild(avatar);
+  });
+
+  const overflow = voters.length - visible.length;
+  if (overflow > 0) {
+    const overflowTag = document.createElement("span");
+    overflowTag.className = "lobby-stack-overflow";
+    overflowTag.textContent = `+${overflow}`;
+    stack.appendChild(overflowTag);
+  }
+
+  return stack;
+}
+
+function createMatchTitleElement(teamA, teamB, winnerCode = "") {
   const title = document.createElement("h3");
   title.className = "match-title-logos";
-  title.appendChild(createTeamLogoNode(teamA));
+  const teamALogo = createTeamLogoNode(teamA);
+  if (normalizeTeamCode(teamA) === winnerCode) {
+    teamALogo.classList.add("match-winner-halo");
+  }
+  title.appendChild(teamALogo);
 
   const versus = document.createElement("span");
   versus.className = "match-vs-text";
   versus.textContent = "vs";
   title.appendChild(versus);
 
-  title.appendChild(createTeamLogoNode(teamB));
+  const teamBLogo = createTeamLogoNode(teamB);
+  if (normalizeTeamCode(teamB) === winnerCode) {
+    teamBLogo.classList.add("match-winner-halo");
+  }
+  title.appendChild(teamBLogo);
   return title;
 }
 

@@ -1,6 +1,6 @@
 "use strict";
 
-const CACHE_VERSION = "ipl-predictor-v5";
+const CACHE_VERSION = "ipl-predictor-v14";
 const APP_SHELL = [
   "./",
   "./index.html",
