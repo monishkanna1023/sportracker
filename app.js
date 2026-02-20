@@ -145,7 +145,7 @@ function bootstrap() {
     dom.userProfileModal.classList.add("hidden");
   });
 
-  renderSignedOut();
+  // Waiting for onAuthStateChanged to decide whether to show login or app
 
   onAuthStateChanged(auth, async (authUser) => {
     currentAuthUser = authUser;
