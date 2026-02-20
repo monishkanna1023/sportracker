@@ -100,6 +100,7 @@ const dom = {
   statFavSuccess: document.querySelector("#stat-fav-success"),
   statNemesis: document.querySelector("#stat-nemesis"),
   modalHistoryList: document.querySelector("#modal-history-list"),
+  appLoading: document.querySelector("#app-loading"),
 };
 
 const state = {
@@ -156,6 +157,7 @@ function bootstrap() {
       state.predictionMap = {};
       currentUserProfile = null;
       renderSignedOut();
+      dom.appLoading.classList.add("hidden");
       return;
     }
 
@@ -164,6 +166,8 @@ function bootstrap() {
       startRealtimeListeners();
     } catch (error) {
       setAuthError(readableError(error));
+    } finally {
+      dom.appLoading.classList.add("hidden");
     }
   });
 
