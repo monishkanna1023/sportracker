@@ -71,6 +71,7 @@ const dom = {
   headerUsername: document.querySelector("#header-username"),
   headerRole: document.querySelector("#header-role"),
   matchesList: document.querySelector("#matches-list"),
+  historyList: document.querySelector("#history-list"),
   leaderboardList: document.querySelector("#leaderboard-list"),
   profileForm: document.querySelector("#profile-form"),
   profileUsername: document.querySelector("#profile-username"),
@@ -662,13 +663,29 @@ function renderMatches() {
   }
 
   dom.matchesList.innerHTML = "";
+  dom.historyList.innerHTML = "";
 
-  if (!state.matches.length) {
+  const activeMatches = state.matches.filter(m => {
+    const status = effectiveStatus(m);
+    return status !== "completed" && status !== "completed_no_result";
+  });
+  const historyMatches = state.matches.filter(m => {
+    const status = effectiveStatus(m);
+    return status === "completed" || status === "completed_no_result";
+  });
+
+  if (!activeMatches.length) {
     const empty = document.createElement("p");
     empty.className = "muted";
-    empty.textContent = "No fixtures yet. Ask admin to create the first match.";
+    empty.textContent = "No active fixtures. Ask admin to create the next match.";
     dom.matchesList.appendChild(empty);
-    return;
+  }
+  
+  if (!historyMatches.length) {
+    const empty = document.createElement("p");
+    empty.className = "muted";
+    empty.textContent = "No completed matches yet.";
+    dom.historyList.appendChild(empty);
   }
 
   const currentUserIsParticipant = isParticipantUser(currentUserProfile);
@@ -776,7 +793,11 @@ function renderMatches() {
       card.appendChild(lobbyGrid);
     }
 
-    dom.matchesList.appendChild(card);
+    if (matchStatus === "completed" || matchStatus === "completed_no_result") {
+      dom.historyList.appendChild(card);
+    } else {
+      dom.matchesList.appendChild(card);
+    }
   }
 }
 
