@@ -86,6 +86,20 @@ const dom = {
   startTime: document.querySelector("#start-time"),
   adminMatchList: document.querySelector("#admin-match-list"),
   adminUsersList: document.querySelector("#admin-users-list"),
+  userProfileModal: document.querySelector("#user-profile-modal"),
+  closeProfileBtn: document.querySelector("#close-profile-btn"),
+  modalAvatar: document.querySelector("#modal-avatar"),
+  modalUsername: document.querySelector("#modal-username"),
+  modalRank: document.querySelector("#modal-rank"),
+  modalPoints: document.querySelector("#modal-points"),
+  statWinrate: document.querySelector("#stat-winrate"),
+  statParticipate: document.querySelector("#stat-participate"),
+  statStreakCur: document.querySelector("#stat-streak-cur"),
+  statStreakMax: document.querySelector("#stat-streak-max"),
+  statFavTeam: document.querySelector("#stat-fav-team"),
+  statFavSuccess: document.querySelector("#stat-fav-success"),
+  statNemesis: document.querySelector("#stat-nemesis"),
+  modalHistoryList: document.querySelector("#modal-history-list"),
 };
 
 const state = {
@@ -125,6 +139,10 @@ function bootstrap() {
   bindAdminForm();
   setupPwaInstall();
   registerServiceWorker();
+
+  dom.closeProfileBtn.addEventListener("click", () => {
+    dom.userProfileModal.classList.add("hidden");
+  });
 
   renderSignedOut();
 
@@ -680,7 +698,7 @@ function renderMatches() {
     empty.textContent = "No active fixtures. Ask admin to create the next match.";
     dom.matchesList.appendChild(empty);
   }
-  
+
   if (!historyMatches.length) {
     const empty = document.createElement("p");
     empty.className = "muted";
@@ -823,6 +841,10 @@ function renderLeaderboard() {
   usersSorted.forEach((user, index) => {
     const row = document.createElement("div");
     row.className = "leader-row";
+    row.style.cursor = "pointer"; // Make it look clickable
+    row.addEventListener("click", () => {
+      openUserProfileModal(user, index + 1);
+    });
 
     const left = document.createElement("div");
     left.className = "leader-left";
@@ -1811,4 +1833,165 @@ async function onetimeWinnerPredictions(matchId, winningTeam) {
   const predictionsQuery = query(collection(db, "predictions"), where("matchId", "==", matchId));
   const snapshot = await getDocs(predictionsQuery);
   return snapshot.docs.filter((docSnap) => String(docSnap.data().teamName || "") === winningTeam);
+}
+
+// User Profile Analytics Logic
+function calculateUserStats(userId) {
+  const completedMatches = state.matches
+    .filter((m) => effectiveStatus(m) === "completed" || effectiveStatus(m) === "completed_no_result")
+    .sort((a, b) => getMillis(a.startTime) - getMillis(b.startTime));
+
+  const stats = {
+    totalCompletedMatches: completedMatches.length,
+    matchesVoted: 0,
+    correctPicks: 0,
+    currentStreak: 0,
+    longestStreak: 0,
+    teamFrequency: {},
+    teamSuccess: {},
+    teamFailure: {}, // Teams that cost the user points when they played (nemesis logic)
+    history: [], // Recent 10 picks
+  };
+
+  if (!stats.totalCompletedMatches) return stats;
+
+  let currentStreakCounter = 0;
+
+  for (const match of completedMatches) {
+    const pick = getPrediction(match.id, userId);
+    const win = pick && match.status === "completed" && pick === match.winner;
+    const loss = pick && match.status === "completed" && pick !== match.winner;
+
+    // Add to Recent history (prepend so newest is first)
+    if (stats.history.length < 10) {
+      stats.history.unshift({ match, pick, win, loss });
+    } else {
+      // Just keep replacing to keep it O(N) but bounded
+      stats.history.pop();
+      stats.history.unshift({ match, pick, win, loss });
+    }
+
+    if (!pick) {
+      currentStreakCounter = 0; // Missing a vote breaks streak
+      continue;
+    }
+
+    stats.matchesVoted++;
+
+    // team popularity tracking
+    stats.teamFrequency[pick] = (stats.teamFrequency[pick] || 0) + 1;
+    if (!stats.teamSuccess[pick]) stats.teamSuccess[pick] = 0;
+
+    if (win) {
+      stats.correctPicks++;
+      currentStreakCounter++;
+      stats.teamSuccess[pick]++;
+      if (currentStreakCounter > stats.longestStreak) {
+        stats.longestStreak = currentStreakCounter;
+      }
+    } else if (loss) {
+      currentStreakCounter = 0;
+      // Nemesis logic: The team that won when user lost (so, the team that beat their pick or the team they picked that lost)
+      // Let's define Nemesis as: The team that *won* the match when user picked the other team.
+      const winningTeamInMatch = match.winner;
+      if (winningTeamInMatch) {
+        stats.teamFailure[winningTeamInMatch] = (stats.teamFailure[winningTeamInMatch] || 0) + 1;
+      }
+    } else {
+      currentStreakCounter = 0; // abandoned match breaks streak technically
+    }
+  }
+
+  stats.currentStreak = currentStreakCounter;
+  stats.winRate = stats.matchesVoted ? Math.round((stats.correctPicks / stats.matchesVoted) * 100) : 0;
+  stats.participation = Math.round((stats.matchesVoted / stats.totalCompletedMatches) * 100);
+
+  // Favorite Team Calc
+  let favTeam = "--";
+  let maxFreq = 0;
+  for (const [team, count] of Object.entries(stats.teamFrequency)) {
+    if (count > maxFreq) {
+      maxFreq = count;
+      favTeam = team;
+    }
+  }
+  stats.favoriteTeam = favTeam;
+  stats.favoriteSuccessRate = maxFreq ? Math.round((stats.teamSuccess[favTeam] / maxFreq) * 100) : 0;
+
+  // Nemesis Team Calc
+  let nemTeam = "--";
+  let maxFail = 0;
+  for (const [team, count] of Object.entries(stats.teamFailure)) {
+    if (count > maxFail) {
+      maxFail = count;
+      nemTeam = team;
+    }
+  }
+  stats.nemesisTeam = nemTeam;
+
+  return stats;
+}
+
+function openUserProfileModal(user, rank) {
+  if (!user) return;
+  const stats = calculateUserStats(user.id);
+
+  // Header Setup
+  updateAvatarElement(dom.modalAvatar, user);
+  dom.modalUsername.textContent = user.username;
+  dom.modalRank.textContent = rank ? `#${rank}` : "--";
+  dom.modalPoints.textContent = `${user.points} pts`;
+
+  // Core Stats
+  dom.statWinrate.textContent = `${stats.winRate}%`;
+  dom.statParticipate.textContent = `${stats.participation}%`;
+  dom.statStreakCur.textContent = stats.currentStreak;
+  dom.statStreakMax.textContent = stats.longestStreak;
+
+  // Behavioral Stats
+  dom.statFavTeam.textContent = stats.favoriteTeam === "--" ? "None" : stats.favoriteTeam;
+  if (stats.favoriteTeam !== "--") {
+    dom.statFavSuccess.textContent = `(${stats.favoriteSuccessRate}% win)`;
+  } else {
+    dom.statFavSuccess.textContent = "";
+  }
+  dom.statNemesis.textContent = stats.nemesisTeam;
+
+  // History List Rendering
+  dom.modalHistoryList.innerHTML = "";
+  if (!stats.history.length) {
+    const empty = document.createElement("p");
+    empty.className = "muted tiny text-center";
+    empty.textContent = "No history available.";
+    dom.modalHistoryList.appendChild(empty);
+  } else {
+    stats.history.forEach(h => {
+      const row = document.createElement("div");
+      row.className = "mini-pick-row";
+
+      const vs = document.createElement("span");
+      vs.textContent = `${h.match.teamA} vs ${h.match.teamB}`;
+
+      const res = document.createElement("span");
+      if (!h.pick) {
+        res.className = "pick-pending";
+        res.textContent = "Missed";
+      } else if (h.win) {
+        res.className = "pick-won";
+        res.textContent = h.pick + " ✓";
+      } else if (h.loss) {
+        res.className = "pick-lost";
+        res.textContent = h.pick + " ✗";
+      } else {
+        res.className = "pick-pending";
+        res.textContent = "Abandoned";
+      }
+
+      row.appendChild(vs);
+      row.appendChild(res);
+      dom.modalHistoryList.appendChild(row);
+    });
+  }
+
+  dom.userProfileModal.classList.remove("hidden");
 }

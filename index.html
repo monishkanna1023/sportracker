@@ -228,6 +228,66 @@
         </button>
       </nav>
     </section>
+
+    <!-- User Profile Modal -->
+    <div id="user-profile-modal" class="modal-overlay hidden">
+      <div class="modal-content panel">
+        <button id="close-profile-btn" class="btn btn-ghost modal-close-btn" type="button">×</button>
+
+        <div class="profile-header text-center stack-sm">
+          <div id="modal-avatar" class="avatar avatar-lg mx-auto"></div>
+          <h2 id="modal-username" class="user-name"></h2>
+          <div class="modal-badges">
+            <span id="modal-rank" class="rank-chip"></span>
+            <span id="modal-points" class="score-chip"></span>
+          </div>
+        </div>
+
+        <div class="stats-section stack-sm mt-md">
+          <h3 class="lobby-title">Performance</h3>
+          <div class="stats-grid">
+            <div class="stat-card">
+              <span class="muted tiny">Win Rate</span>
+              <strong id="stat-winrate" class="stat-value">--</strong>
+            </div>
+            <div class="stat-card">
+              <span class="muted tiny">Participation</span>
+              <strong id="stat-participate" class="stat-value">--</strong>
+            </div>
+            <div class="stat-card">
+              <span class="muted tiny">Current Streak</span>
+              <strong id="stat-streak-cur" class="stat-value">--</strong>
+            </div>
+            <div class="stat-card">
+              <span class="muted tiny">Longest Streak</span>
+              <strong id="stat-streak-max" class="stat-value">--</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="stats-section stack-sm mt-md">
+          <h3 class="lobby-title">Behavior</h3>
+          <div class="stats-grid">
+            <div class="stat-card stat-wide">
+              <span class="muted tiny">Favorite Team</span>
+              <div class="stat-row">
+                <strong id="stat-fav-team" class="stat-value">--</strong>
+                <span id="stat-fav-success" class="stat-detail muted tiny"></span>
+              </div>
+            </div>
+            <div class="stat-card stat-wide">
+              <span class="muted tiny">Nemesis Team (Cost most points)</span>
+              <strong id="stat-nemesis" class="stat-value">--</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="stats-section stack-sm mt-md">
+          <h3 class="lobby-title">Recent Picks</h3>
+          <div id="modal-history-list" class="mini-history-list stack-sm"></div>
+        </div>
+      </div>
+    </div>
   </main>
 
   <script nomodule src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
