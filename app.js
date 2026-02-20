@@ -279,6 +279,10 @@ function bindGlobalActions() {
     });
   });
 
+  dom.headerAvatar.addEventListener("click", () => {
+    setActiveSection("settings-section");
+  });
+
   dom.settingsAdminBtn.addEventListener("click", () => {
     setActiveSection("admin-section");
   });
