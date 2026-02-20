@@ -1,6 +1,6 @@
 "use strict";
 
-const CACHE_VERSION = "ipl-predictor-v4";
+const CACHE_VERSION = "ipl-predictor-v5";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -9,6 +9,16 @@ const APP_SHELL = [
   "./app-legacy.js",
   "./firebase-config.js",
   "./manifest.json",
+  "./assets/CSK.png",
+  "./assets/DC.png",
+  "./assets/GT.png",
+  "./assets/KKR.png",
+  "./assets/LSG.png",
+  "./assets/MI.png",
+  "./assets/PBKS.png",
+  "./assets/RR.png",
+  "./assets/RCB.png",
+  "./assets/SRH.png",
   "./icons/favicon-32.png",
   "./icons/favicon-ipl.png",
   "./icons/icon-192.png",

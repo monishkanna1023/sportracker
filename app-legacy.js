@@ -173,6 +173,18 @@ const USERNAME_MAX = 24;
 const PASSWORD_MIN = 6;
 const AVATAR_MAX_DATA_URL_CHARS = 200000;
 const AVATAR_RENDER_MAX_PX = 256;
+const TEAM_LOGO_MAP = {
+  CSK: "./assets/CSK.png",
+  DC: "./assets/DC.png",
+  GT: "./assets/GT.png",
+  KKR: "./assets/KKR.png",
+  LSG: "./assets/LSG.png",
+  MI: "./assets/MI.png",
+  PBKS: "./assets/PBKS.png",
+  RR: "./assets/RR.png",
+  RCB: "./assets/RCB.png",
+  SRH: "./assets/SRH.png",
+};
 
 const dom = {
   authView: document.querySelector("#auth-view"),
@@ -524,6 +536,14 @@ function bindProfileForm() {
 }
 
 function bindAdminForm() {
+  syncTeamSelectAvailability();
+  dom.teamA.addEventListener("change", () => {
+    syncTeamSelectAvailability("teamA");
+  });
+  dom.teamB.addEventListener("change", () => {
+    syncTeamSelectAvailability("teamB");
+  });
+
   dom.createMatchForm.addEventListener("submit", async (event) => {
     event.preventDefault();
 
@@ -565,10 +585,41 @@ function bindAdminForm() {
         updatedAt: serverTimestamp(),
       });
       dom.createMatchForm.reset();
+      syncTeamSelectAvailability();
     } catch (error) {
       alert(readableError(error));
     }
   });
+}
+
+function syncTeamSelectAvailability(changedBy = "") {
+  if (!dom.teamA || !dom.teamB) {
+    return;
+  }
+
+  const selectedA = String(dom.teamA.value || "");
+  const selectedB = String(dom.teamB.value || "");
+
+  setTeamOptionAvailability(dom.teamA, selectedB);
+  setTeamOptionAvailability(dom.teamB, selectedA);
+
+  if (selectedA && selectedA === selectedB) {
+    if (changedBy === "teamA") {
+      dom.teamB.value = "";
+    } else if (changedBy === "teamB") {
+      dom.teamA.value = "";
+    }
+  }
+
+  setTeamOptionAvailability(dom.teamA, String(dom.teamB.value || ""));
+  setTeamOptionAvailability(dom.teamB, String(dom.teamA.value || ""));
+}
+
+function setTeamOptionAvailability(selectElement, blockedValue) {
+  for (let index = 0; index < selectElement.options.length; index += 1) {
+    const option = selectElement.options[index];
+    option.disabled = option.value ? option.value === blockedValue : false;
+  }
 }
 
 async function ensureUserProfile(authUser) {
@@ -771,8 +822,7 @@ function renderMatches() {
     header.className = "match-head";
 
     const titleWrap = document.createElement("div");
-    const title = document.createElement("h3");
-    title.textContent = `${match.teamA} vs ${match.teamB}`;
+    const title = createMatchTitleElement(match.teamA, match.teamB);
     titleWrap.appendChild(title);
 
     const time = document.createElement("p");
@@ -870,7 +920,7 @@ function renderMatches() {
 
       const label = document.createElement("p");
       label.className = "tiny";
-      label.textContent = `${user.username}: ${pick || "No pick yet"}`;
+      label.textContent = pick || "No pick yet";
       row.appendChild(label);
 
       lobbyList.appendChild(row);
@@ -1016,7 +1066,7 @@ function renderAdminMatches() {
       card.appendChild(done);
     } else {
       const winnerA = document.createElement("button");
-      winnerA.className = "btn btn-small btn-primary";
+      winnerA.className = "btn btn-small btn-primary admin-winner-btn";
       winnerA.type = "button";
       winnerA.disabled = !canFinalize;
       winnerA.textContent = `Winner: ${match.teamA}`;
@@ -1026,7 +1076,7 @@ function renderAdminMatches() {
       actionRow.appendChild(winnerA);
 
       const winnerB = document.createElement("button");
-      winnerB.className = "btn btn-small btn-primary";
+      winnerB.className = "btn btn-small btn-primary admin-winner-btn";
       winnerB.type = "button";
       winnerB.disabled = !canFinalize;
       winnerB.textContent = `Winner: ${match.teamB}`;
@@ -1036,7 +1086,7 @@ function renderAdminMatches() {
       actionRow.appendChild(winnerB);
 
       const abandoned = document.createElement("button");
-      abandoned.className = "btn btn-small btn-danger";
+      abandoned.className = "btn btn-small btn-danger admin-half-btn";
       abandoned.type = "button";
       abandoned.disabled = !canFinalize;
       abandoned.textContent = "Mark as Abandoned";
@@ -1047,7 +1097,7 @@ function renderAdminMatches() {
     }
 
     const deleteFixtureBtn = document.createElement("button");
-    deleteFixtureBtn.className = "btn btn-small btn-ghost";
+    deleteFixtureBtn.className = "btn btn-small btn-ghost admin-half-btn";
     deleteFixtureBtn.type = "button";
     deleteFixtureBtn.textContent = "Delete Fixture";
     deleteFixtureBtn.addEventListener("click", async () => {
@@ -1569,6 +1619,45 @@ function statusClass(status) {
     return "completed";
   }
   return "no-result";
+}
+
+function createMatchTitleElement(teamA, teamB) {
+  const title = document.createElement("h3");
+  title.className = "match-title-logos";
+  title.appendChild(createTeamLogoNode(teamA));
+
+  const versus = document.createElement("span");
+  versus.className = "match-vs-text";
+  versus.textContent = "vs";
+  title.appendChild(versus);
+
+  title.appendChild(createTeamLogoNode(teamB));
+  return title;
+}
+
+function createTeamLogoNode(teamName) {
+  const code = normalizeTeamCode(teamName);
+  const logoSrc = TEAM_LOGO_MAP[code];
+
+  if (logoSrc) {
+    const image = document.createElement("img");
+    image.className = "match-team-logo";
+    image.src = logoSrc;
+    image.alt = `${code} logo`;
+    image.title = code;
+    image.loading = "lazy";
+    image.decoding = "async";
+    return image;
+  }
+
+  const fallback = document.createElement("span");
+  fallback.className = "match-team-fallback";
+  fallback.textContent = code || "TBD";
+  return fallback;
+}
+
+function normalizeTeamCode(teamName) {
+  return String(teamName || "").trim().toUpperCase();
 }
 
 function validateUsername(username) {
