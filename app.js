@@ -1855,6 +1855,11 @@ function calculateUserStats(userId) {
     correctPicks: 0,
     currentStreak: 0,
     longestStreak: 0,
+    winRate: 0,
+    participation: 0,
+    favoriteTeam: "--",
+    favoriteSuccessRate: 0,
+    nemesisTeam: "--",
     teamFrequency: {},
     teamSuccess: {},
     teamFailure: {}, // Teams that cost the user points when they played (nemesis logic)
