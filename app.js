@@ -36,14 +36,22 @@ const AVATAR_RENDER_MAX_PX = 256;
 const TEAM_LOGO_MAP = {
   CSK: "./assets/CSK.png",
   DC: "./assets/DC.png",
+  EG: "./assets/EG.png",
   GT: "./assets/GT.png",
+  IN: "./assets/IN.png",
   KKR: "./assets/KKR.png",
   LSG: "./assets/LSG.png",
   MI: "./assets/MI.png",
+  NZ: "./assets/NZ.png",
   PBKS: "./assets/PBKS.png",
-  RR: "./assets/RR.png",
+  PK: "./assets/PK.png",
   RCB: "./assets/RCB.png",
+  RR: "./assets/RR.png",
+  SA: "./assets/SA.png",
+  SL: "./assets/SL.png",
   SRH: "./assets/SRH.png",
+  WI: "./assets/WI.png",
+  ZB: "./assets/ZB.png",
 };
 
 const dom = {
