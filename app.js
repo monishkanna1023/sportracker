@@ -1534,40 +1534,22 @@ function statusClass(status) {
 
 function createLobbyTeamGroup(teamCode, voters) {
   const group = document.createElement("div");
-  group.className = "lobby-team-group";
-
-  const bucket = document.createElement("div");
-  bucket.className = "lobby-team-bucket";
+  group.className = "lobby-team-group-minimal";
 
   if (!voters.length) {
-    bucket.classList.add("lobby-team-bucket-empty");
-    const centerLogo = createTeamLogoNode(teamCode);
-    centerLogo.classList.add("lobby-team-logo", "lobby-team-logo-center");
-    bucket.appendChild(centerLogo);
-    group.appendChild(bucket);
-    return group;
+    return group; // Empty container to maintain grid alignment
   }
 
-  const left = document.createElement("div");
-  left.className = "lobby-team-left";
-  const logoNode = createTeamLogoNode(teamCode);
-  logoNode.classList.add("lobby-team-logo");
-  left.appendChild(logoNode);
-  bucket.appendChild(left);
+  const stack = createLobbyAvatarStack(voters, 4);
+  group.appendChild(stack);
 
-  const preview = document.createElement("div");
-  preview.className = "lobby-team-preview";
-  if (voters.length) {
-    preview.appendChild(createLobbyAvatarStack(voters, 4));
+  if (voters.length > 4) {
+    const overflow = document.createElement("span");
+    overflow.className = "lobby-stack-overflow";
+    overflow.textContent = `+${voters.length - 4}`;
+    group.appendChild(overflow);
   }
-  bucket.appendChild(preview);
 
-  const count = document.createElement("span");
-  count.className = "lobby-team-count-badge";
-  count.textContent = String(voters.length);
-  bucket.appendChild(count);
-
-  group.appendChild(bucket);
   return group;
 }
 

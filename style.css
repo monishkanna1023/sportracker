@@ -649,70 +649,12 @@ input[readonly] {
   margin-top: 0.72rem;
 }
 
-.lobby-team-group {
-  min-width: 0;
-}
-
-.lobby-team-bucket {
-  border: 1px solid #b8c9f0;
-  border-radius: 14px;
-  min-height: 56px;
-  padding: 0.38rem 0.5rem;
-  background: linear-gradient(180deg, #f2f6ff, #e8efff);
+.lobby-team-group-minimal {
   display: flex;
-  align-items: center;
-  gap: 0.45rem;
-  width: 100%;
-  overflow: hidden;
-}
-
-.lobby-team-bucket-empty {
   justify-content: center;
-}
-
-.lobby-team-left {
-  display: inline-flex;
   align-items: center;
-  gap: 0.36rem;
-  min-width: 30px;
-}
-
-.lobby-team-logo.match-team-logo {
-  width: 30px;
-  height: 30px;
-  padding: 0.12rem;
-}
-
-.lobby-team-logo.match-team-fallback {
-  min-width: 30px;
-  width: 30px;
-  height: 30px;
-  font-size: 0.74rem;
-  padding: 0;
-}
-
-.lobby-team-logo-center.match-team-logo {
-  width: 32px;
-  height: 32px;
-  padding: 0.13rem;
-}
-
-.lobby-team-logo-center.match-team-fallback {
-  min-width: 32px;
-  width: 32px;
-  height: 32px;
-  font-size: 0.72rem;
-  padding: 0;
-}
-
-.lobby-team-preview {
-  flex: 1 1 auto;
+  gap: 0.35rem;
   min-width: 0;
-  min-height: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  overflow: hidden;
 }
 
 .lobby-avatar-stack {
@@ -751,21 +693,6 @@ input[readonly] {
   font-size: 0.7rem;
   font-weight: 700;
   line-height: 1.2;
-}
-
-.lobby-team-count-badge {
-  flex-shrink: 0;
-  min-width: 20px;
-  height: 20px;
-  border-radius: 999px;
-  background: #d6e5ff;
-  color: #123071;
-  border: 1px solid #a6beed;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.84rem;
-  font-weight: 800;
 }
 
 .lobby-list {
