@@ -1543,13 +1543,6 @@ function createLobbyTeamGroup(teamCode, voters) {
   const stack = createLobbyAvatarStack(voters, 4);
   group.appendChild(stack);
 
-  if (voters.length > 4) {
-    const overflow = document.createElement("span");
-    overflow.className = "lobby-stack-overflow";
-    overflow.textContent = `+${voters.length - 4}`;
-    group.appendChild(overflow);
-  }
-
   return group;
 }
 
