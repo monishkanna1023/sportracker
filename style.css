@@ -621,8 +621,14 @@ input[readonly] {
 
 .match-status-badge {
   position: absolute;
-  top: 0.6rem;
-  right: 0.6rem;
+  top: 0;
+  right: 0;
+  border-top-left-radius: 0;
+  border-bottom-right-radius: 0;
+  border-top-right-radius: inherit;
+  border-bottom-left-radius: var(--radius-sm);
+  padding: 0.35rem 0.65rem;
+  z-index: 2;
 }
 
 .badge.upcoming {
