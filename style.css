@@ -476,6 +476,9 @@ input[readonly] {
 
 .section-title-row {
   margin-bottom: 0.9rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
 }
 
 .section-title-row p {

@@ -70,44 +70,33 @@
     </section>
 
     <section id="app-view" class="hidden">
-      <header class="topbar panel">
-        <div class="user-pill">
-          <div id="header-avatar" class="avatar"></div>
-          <div>
-            <p id="header-username" class="user-name"></p>
-            <p id="header-role" class="muted tiny"></p>
-          </div>
-        </div>
-        <div class="topbar-actions">
-          <button class="nav-btn active" data-section="dashboard-section">Dashboard</button>
-          <button class="nav-btn" data-section="leaderboard-section">Leaderboard</button>
-          <button class="nav-btn" data-section="settings-section">Settings</button>
-          <button id="admin-nav-btn" class="nav-btn hidden" data-section="admin-section">Admin</button>
-          <button id="admin-users-nav-btn" class="nav-btn hidden" data-section="admin-users-section">Manage
-            Users</button>
-          <button id="install-btn" class="btn btn-ghost hidden">Install App</button>
-          <button id="logout-btn" class="btn btn-ghost">Logout</button>
-        </div>
-      </header>
-
       <section id="dashboard-section" class="panel section-view">
         <div class="section-title-row">
-          <h2>Matches</h2>
-          <p class="muted">Upcoming matches stay editable until official start time.</p>
+          <div>
+            <h2>Matches</h2>
+            <p class="muted">Upcoming matches stay editable until official start time.</p>
+          </div>
+          <div class="section-user-avatar avatar" title="Profile" style="cursor: pointer;"></div>
         </div>
         <div id="matches-list" class="match-grid"></div>
       </section>
 
       <section id="leaderboard-section" class="panel section-view hidden">
         <div class="section-title-row">
-          <h2>Leaderboard</h2>
+          <div>
+            <h2>Leaderboard</h2>
+          </div>
+          <div class="section-user-avatar avatar" title="Profile" style="cursor: pointer;"></div>
         </div>
         <div id="leaderboard-list" class="leaderboard-list"></div>
       </section>
 
       <section id="settings-section" class="panel section-view hidden">
         <div class="section-title-row">
-          <h2>Settings</h2>
+          <div>
+            <h2>Settings</h2>
+          </div>
+          <div class="section-user-avatar avatar" title="Profile" style="cursor: pointer;"></div>
         </div>
         <form id="profile-form" class="stack-lg profile-form">
           <label>
@@ -141,8 +130,11 @@
 
       <section id="history-section" class="panel section-view hidden">
         <div class="section-title-row">
-          <h2>Match History</h2>
-          <p class="muted">Results of all completed matches.</p>
+          <div>
+            <h2>Match History</h2>
+            <p class="muted">Results of all completed matches.</p>
+          </div>
+          <div class="section-user-avatar avatar" title="Profile" style="cursor: pointer;"></div>
         </div>
         <div id="history-list" class="match-grid"></div>
         <div class="settings-actions" style="margin-top: 1rem;">
@@ -152,8 +144,11 @@
 
       <section id="admin-section" class="panel section-view hidden">
         <div class="section-title-row">
-          <h2>Admin Dashboard</h2>
-          <p class="muted">Create fixtures, publish winner, or mark matches as abandoned.</p>
+          <div>
+            <h2>Admin Dashboard</h2>
+            <p class="muted">Create fixtures, publish winner, or mark matches as abandoned.</p>
+          </div>
+          <div class="section-user-avatar avatar" title="Profile" style="cursor: pointer;"></div>
         </div>
         <form id="create-match-form" class="match-form">
           <label>
@@ -216,8 +211,11 @@
 
       <section id="admin-users-section" class="panel section-view hidden">
         <div class="section-title-row">
-          <h2>Manage Users</h2>
-          <p class="muted">Remove member accounts from gameplay (Spark-safe soft delete).</p>
+          <div>
+            <h2>Manage Users</h2>
+            <p class="muted">Remove member accounts from gameplay (Spark-safe soft delete).</p>
+          </div>
+          <div class="section-user-avatar avatar" title="Profile" style="cursor: pointer;"></div>
         </div>
         <div id="admin-users-list" class="stack-lg"></div>
       </section>

@@ -67,17 +67,11 @@ const dom = {
   authTabs: document.querySelectorAll("[data-auth-tab]"),
   navButtons: document.querySelectorAll("[data-section]"),
   sectionViews: document.querySelectorAll(".section-view"),
-  adminNavBtn: document.querySelector("#admin-nav-btn"),
-  adminUsersNavBtn: document.querySelector("#admin-users-nav-btn"),
-  installBtn: document.querySelector("#install-btn"),
-  logoutBtn: document.querySelector("#logout-btn"),
   settingsInstallBtn: document.querySelector("#settings-install-btn"),
   settingsAdminBtn: document.querySelector("#settings-admin-btn"),
   settingsUsersBtn: document.querySelector("#settings-users-btn"),
   settingsLogoutBtn: document.querySelector("#settings-logout-btn"),
-  headerAvatar: document.querySelector("#header-avatar"),
-  headerUsername: document.querySelector("#header-username"),
-  headerRole: document.querySelector("#header-role"),
+  sectionAvatars: document.querySelectorAll(".section-user-avatar"),
   matchesList: document.querySelector("#matches-list"),
   historyList: document.querySelector("#history-list"),
   leaderboardList: document.querySelector("#leaderboard-list"),
@@ -316,10 +310,6 @@ function bindAuthForms() {
 }
 
 function bindGlobalActions() {
-  dom.logoutBtn.addEventListener("click", async () => {
-    await performLogout();
-  });
-
   dom.settingsLogoutBtn.addEventListener("click", async () => {
     await performLogout();
   });
@@ -330,8 +320,10 @@ function bindGlobalActions() {
     });
   });
 
-  dom.headerAvatar.addEventListener("click", () => {
-    setActiveSection("settings-section");
+  dom.sectionAvatars.forEach((avatar) => {
+    avatar.addEventListener("click", () => {
+      setActiveSection("settings-section");
+    });
   });
 
   dom.settingsAdminBtn.addEventListener("click", () => {
@@ -352,21 +344,19 @@ async function performLogout() {
 }
 
 function setupPwaInstall() {
-  const actionButtons = [dom.settingsInstallBtn].filter(Boolean);
-  const promptButtons = [dom.installBtn].filter(Boolean);
-  const allInstallButtons = [...promptButtons, ...actionButtons];
+  const allInstallButtons = [dom.settingsInstallBtn].filter(Boolean);
   if (!allInstallButtons.length) {
     return;
   }
 
   const setPromptButtonsVisible = (visible) => {
     const canShow = visible && !isAdminUser(currentUserProfile);
-    promptButtons.forEach((button) => {
+    allInstallButtons.forEach((button) => {
       button.classList.toggle("hidden", !canShow);
     });
   };
 
-  actionButtons.forEach((button) => {
+  allInstallButtons.forEach((button) => {
     button.classList.remove("hidden");
   });
 
@@ -729,9 +719,7 @@ function renderApp() {
 }
 
 function renderHeader() {
-  updateAvatarElement(dom.headerAvatar, currentUserProfile);
-  dom.headerUsername.textContent = currentUserProfile.username;
-  dom.headerRole.textContent = isAdminUser(currentUserProfile) ? "Administrator" : "Member";
+  dom.sectionAvatars.forEach(avatar => updateAvatarElement(avatar, currentUserProfile));
 }
 
 function renderMatches() {
@@ -959,8 +947,6 @@ function renderProfile(user) {
 
 function renderAdmin(user) {
   const showAdmin = isAdminUser(user);
-  dom.adminNavBtn.classList.toggle("hidden", !showAdmin);
-  dom.adminUsersNavBtn.classList.toggle("hidden", !showAdmin);
   dom.settingsAdminBtn.classList.toggle("hidden", !showAdmin);
   dom.settingsUsersBtn.classList.toggle("hidden", !showAdmin);
   dom.settingsInstallBtn.classList.toggle("hidden", showAdmin);
