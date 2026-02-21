@@ -893,6 +893,15 @@ input[readonly] {
   align-items: flex-end;
   justify-content: center;
   padding: 1rem;
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+.modal-overlay.closing {
+  animation: fadeOut 0.2s ease-in forwards;
+}
+
+.modal-overlay.closing .modal-content {
+  animation: slideDownOut 0.2s ease-in forwards;
 }
 
 .modal-content {
@@ -921,6 +930,38 @@ input[readonly] {
   100% {
     transform: translateY(0);
     opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes slideDownOut {
+  0% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateY(100%);
+    opacity: 0;
   }
 }
 

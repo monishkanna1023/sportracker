@@ -144,6 +144,15 @@ function bootstrap() {
     return;
   }
 
+  window.closeModalWithAnimation = function (modalElement, callback) {
+    modalElement.classList.add("closing");
+    setTimeout(() => {
+      modalElement.classList.remove("closing");
+      modalElement.classList.add("hidden");
+      if (callback) callback();
+    }, 200);
+  };
+
   app = initializeApp(firebaseConfig);
   auth = getAuth(app);
   db = getFirestore(app);
@@ -157,11 +166,12 @@ function bootstrap() {
   registerServiceWorker();
 
   const closeProfileModal = () => {
-    dom.userProfileModal.classList.add("hidden");
-    if (returnToRosterOnProfileClose) {
-      dom.rosterModal.classList.remove("hidden");
-      returnToRosterOnProfileClose = false;
-    }
+    closeModalWithAnimation(dom.userProfileModal, () => {
+      if (returnToRosterOnProfileClose) {
+        dom.rosterModal.classList.remove("hidden");
+        returnToRosterOnProfileClose = false;
+      }
+    });
   };
 
   dom.closeProfileBtn.addEventListener("click", closeProfileModal);
@@ -172,15 +182,17 @@ function bootstrap() {
     }
   });
 
-  dom.closeRosterBtn.addEventListener("click", () => {
-    dom.rosterModal.classList.add("hidden");
-    returnToRosterOnProfileClose = false;
-  });
+  const closeRosterModal = () => {
+    closeModalWithAnimation(dom.rosterModal, () => {
+      returnToRosterOnProfileClose = false;
+    });
+  };
+
+  dom.closeRosterBtn.addEventListener("click", closeRosterModal);
 
   dom.rosterModal.addEventListener("click", (e) => {
     if (e.target === dom.rosterModal) {
-      dom.rosterModal.classList.add("hidden");
-      returnToRosterOnProfileClose = false;
+      closeRosterModal();
     }
   });
 
@@ -1633,9 +1645,10 @@ function openRosterModal(teamA, teamB, teamAVoters, teamBVoters) {
 
     row.addEventListener("click", () => {
       const rank = usersSorted.findIndex(u => u.id === user.id) + 1;
-      dom.rosterModal.classList.add("hidden");
       returnToRosterOnProfileClose = true;
-      openUserProfileModal(user, rank);
+      closeModalWithAnimation(dom.rosterModal, () => {
+        openUserProfileModal(user, rank);
+      });
     });
 
     listElem.appendChild(row);
