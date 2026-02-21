@@ -1599,11 +1599,17 @@ function openRosterModal(teamA, teamB, teamAVoters, teamBVoters) {
   dom.rosterTeamATitle.textContent = `${teamA} (${teamAVoters.length})`;
   dom.rosterTeamBTitle.textContent = `${teamB} (${teamBVoters.length})`;
 
-  dom.rosterTeamAList.innerHTML = "";
-  teamAVoters.forEach(user => {
+  const usersSorted = getParticipantUsers().sort((a, b) => {
+    const scoreDiff = (Number(b.points) || 0) - (Number(a.points) || 0);
+    if (scoreDiff !== 0) return scoreDiff;
+    return a.username.localeCompare(b.username);
+  });
+
+  const appendUserRow = (listElem, user) => {
     const row = document.createElement("div");
     row.className = "leader-row";
     row.style.padding = "0.4rem 0.6rem";
+    row.style.cursor = "pointer";
 
     const left = document.createElement("div");
     left.className = "leader-left";
@@ -1615,27 +1621,21 @@ function openRosterModal(teamA, teamB, teamAVoters, teamBVoters) {
     left.appendChild(nameSpan);
 
     row.appendChild(left);
-    dom.rosterTeamAList.appendChild(row);
-  });
+
+    row.addEventListener("click", () => {
+      const rank = usersSorted.findIndex(u => u.id === user.id) + 1;
+      dom.rosterModal.classList.add("hidden");
+      openUserProfileModal(user, rank);
+    });
+
+    listElem.appendChild(row);
+  };
+
+  dom.rosterTeamAList.innerHTML = "";
+  teamAVoters.forEach(user => appendUserRow(dom.rosterTeamAList, user));
 
   dom.rosterTeamBList.innerHTML = "";
-  teamBVoters.forEach(user => {
-    const row = document.createElement("div");
-    row.className = "leader-row";
-    row.style.padding = "0.4rem 0.6rem";
-
-    const left = document.createElement("div");
-    left.className = "leader-left";
-    left.appendChild(createAvatarElement(user));
-
-    const nameSpan = document.createElement("span");
-    nameSpan.className = "leader-name";
-    nameSpan.textContent = user.username;
-    left.appendChild(nameSpan);
-
-    row.appendChild(left);
-    dom.rosterTeamBList.appendChild(row);
-  });
+  teamBVoters.forEach(user => appendUserRow(dom.rosterTeamBList, user));
 
   dom.rosterModal.classList.remove("hidden");
 }
