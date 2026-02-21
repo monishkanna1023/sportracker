@@ -1392,14 +1392,47 @@ async function promoteExpiredMatchesToLive() {
   }
 }
 
+let currentActiveSectionId = null;
+
+const sectionOrder = [
+  "dashboard-section",
+  "leaderboard-section",
+  "settings-section",
+  "history-section",
+  "admin-section",
+  "admin-users-section"
+];
+
 function setActiveSection(sectionId) {
+  if (currentActiveSectionId === sectionId) return;
+
+  const currentIndex = sectionOrder.indexOf(currentActiveSectionId);
+  const newIndex = sectionOrder.indexOf(sectionId);
+
+  let animClass = "";
+  if (currentIndex !== -1 && newIndex !== -1) {
+    animClass = newIndex > currentIndex ? "slide-in-right" : "slide-in-left";
+  } else {
+    animClass = "slide-in-right"; // fallback
+  }
+
   dom.sectionViews.forEach((section) => {
-    section.classList.toggle("hidden", section.id !== sectionId);
+    const isTarget = section.id === sectionId;
+    section.classList.toggle("hidden", !isTarget);
+
+    if (isTarget) {
+      section.classList.remove("slide-in-right", "slide-in-left");
+      // Trigger reflow to restart animation
+      void section.offsetWidth;
+      section.classList.add(animClass);
+    }
   });
 
   dom.navButtons.forEach((button) => {
     button.classList.toggle("active", button.dataset.section === sectionId);
   });
+
+  currentActiveSectionId = sectionId;
 }
 
 function isAdminUser(user) {

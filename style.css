@@ -474,6 +474,38 @@ input[readonly] {
   padding: 0.95rem;
 }
 
+.slide-in-right {
+  animation: slideInRight 0.25s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+.slide-in-left {
+  animation: slideInLeft 0.25s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+@keyframes slideInRight {
+  0% {
+    transform: translateX(30px);
+    opacity: 0;
+  }
+
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInLeft {
+  0% {
+    transform: translateX(-30px);
+    opacity: 0;
+  }
+
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
 .section-title-row {
   margin-bottom: 0.9rem;
   display: flex;
