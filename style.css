@@ -642,71 +642,11 @@ input[readonly] {
   font-size: 0.92rem;
 }
 
-.lobby-accordion {
-  margin-top: 0.8rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.lobby-toggle-btn {
-  background: transparent;
-  border: 1px solid #c8d8f6;
-  color: #3b508f;
-  border-radius: 999px;
-  padding: 0.25rem 0.65rem;
-  font-size: 0.72rem;
-  font-weight: 700;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  font-family: inherit;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-}
-
-.lobby-toggle-btn:hover {
-  background: #f0f4ff;
-  color: #123071;
-  border-color: #a6beed;
-}
-
-.lobby-toggle-btn .chevron {
-  width: 14px;
-  height: 14px;
-  transition: transform 0.2s ease;
-  flex-shrink: 0;
-}
-
-.lobby-toggle-btn.active .chevron {
-  transform: rotate(180deg);
-}
-
-.lobby-accordion-content {
+.lobby-team-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.5rem;
-  width: 100%;
-  margin-top: 0.6rem;
-  animation: slideDown 0.2s ease-out;
-}
-
-.lobby-accordion-content.hidden {
-  display: none;
-}
-
-@keyframes slideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-4px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  margin-top: 0.72rem;
 }
 
 .lobby-team-group-minimal {
