@@ -538,6 +538,7 @@ input[readonly] {
   align-items: flex-start;
   gap: 0.7rem;
   flex-wrap: wrap;
+  margin-top: 1.5rem;
 }
 
 .match-title-wrap {
