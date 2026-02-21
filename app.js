@@ -823,11 +823,29 @@ function renderMatches() {
         }
       });
 
-      const lobbyGrid = document.createElement("div");
-      lobbyGrid.className = "lobby-team-grid";
-      lobbyGrid.appendChild(createLobbyTeamGroup(teamACode, teamAVoters));
-      lobbyGrid.appendChild(createLobbyTeamGroup(teamBCode, teamBVoters));
-      card.appendChild(lobbyGrid);
+      const accordion = document.createElement("div");
+      accordion.className = "lobby-accordion";
+
+      const totalVoters = teamAVoters.length + teamBVoters.length;
+      if (totalVoters > 0) {
+        const toggleBtn = document.createElement("button");
+        toggleBtn.className = "lobby-toggle-btn";
+        toggleBtn.innerHTML = `<span>Who Voted? (${totalVoters})</span><svg viewBox="0 0 24 24" class="chevron"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" fill="none" d="M6 9l6 6 6-6"/></svg>`;
+
+        const content = document.createElement("div");
+        content.className = "lobby-accordion-content hidden";
+        content.appendChild(createLobbyTeamGroup(teamACode, teamAVoters));
+        content.appendChild(createLobbyTeamGroup(teamBCode, teamBVoters));
+
+        toggleBtn.addEventListener("click", () => {
+          content.classList.toggle("hidden");
+          toggleBtn.classList.toggle("active");
+        });
+
+        accordion.appendChild(toggleBtn);
+        accordion.appendChild(content);
+        card.appendChild(accordion);
+      }
     }
 
     if (matchStatus === "completed" || matchStatus === "completed_no_result") {
