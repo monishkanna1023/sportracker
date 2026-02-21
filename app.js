@@ -102,6 +102,7 @@ const dom = {
   statNemesis: document.querySelector("#stat-nemesis"),
   modalHistoryList: document.querySelector("#modal-history-list"),
   appLoading: document.querySelector("#app-loading"),
+  appOffline: document.querySelector("#app-offline"),
   rosterModal: document.querySelector("#roster-modal"),
   closeRosterBtn: document.querySelector("#close-roster-btn"),
   rosterTeamATitle: document.querySelector("#roster-team-a-title"),
@@ -157,6 +158,16 @@ function bootstrap() {
   bindAdminForm();
   setupPwaInstall();
   registerServiceWorker();
+
+  // Handle Offline State
+  const updateOfflineState = () => {
+    if (dom.appOffline) {
+      dom.appOffline.classList.toggle("hidden", navigator.onLine);
+    }
+  };
+  window.addEventListener("online", updateOfflineState);
+  window.addEventListener("offline", updateOfflineState);
+  updateOfflineState();
 
   const closeProfileModal = () => {
     closeModalWithAnimation(dom.userProfileModal, () => {
