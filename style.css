@@ -394,8 +394,8 @@ input[readonly] {
   grid-template-columns: repeat(3, minmax(0, 1fr));
   align-items: stretch;
   gap: 0.28rem;
-  min-height: 98px;
-  padding: 0.62rem 0.62rem calc(0.76rem + env(safe-area-inset-bottom));
+  min-height: 60px;
+  padding: 0.4rem 0.62rem calc(0.4rem + env(safe-area-inset-bottom));
   border-radius: 27px;
   border: 1px solid rgba(80, 110, 180, 0.4);
   background: linear-gradient(145deg,
@@ -416,7 +416,7 @@ input[readonly] {
   z-index: 2;
   border: 0;
   border-radius: 16px;
-  min-height: 68px;
+  min-height: 52px;
   padding: 0.28rem 0.14rem;
   display: grid;
   justify-items: center;
@@ -442,12 +442,6 @@ input[readonly] {
   stroke-linejoin: round;
   display: block;
   filter: drop-shadow(0 1px 2px rgba(5, 14, 44, 0.35));
-}
-
-.mobile-tab-btn span {
-  line-height: 1.1;
-  white-space: nowrap;
-  text-shadow: 0 1px 2px rgba(5, 14, 44, 0.45);
 }
 
 .mobile-tab-btn.active {
