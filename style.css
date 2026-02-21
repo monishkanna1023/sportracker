@@ -85,97 +85,39 @@ body {
   gap: 1.5rem;
 }
 
-/* The Cricket Pitch */
-.pitch {
-  width: 60px;
-  height: 120px;
-  background: #8b7355;
-  /* Dirt color */
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  border-radius: 4px;
-  position: relative;
-  overflow: hidden;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-}
+@keyframes raiseArmLeft {
 
-/* Crease Lines */
-.crease {
-  position: absolute;
-  width: 100%;
-  height: 2px;
-  background: rgba(255, 255, 255, 0.6);
-}
-
-.crease.top {
-  top: 15%;
-}
-
-.crease.bottom {
-  bottom: 15%;
-}
-
-/* The Ball / Pitch marks */
-.ball-mark {
-  position: absolute;
-  width: 12px;
-  height: 12px;
-  background: #fde047;
-  /* Bright yellow/gold */
-  border-radius: 50%;
-  transform: translate(-50%, -50%) scale(0);
-  box-shadow: 0 0 10px #eab308, 0 0 20px #eab308;
-  animation: pop 2.4s infinite ease-in-out;
-}
-
-/* Different lengths/positions on the pitch */
-.mark-1 {
-  top: 80%;
-  left: 30%;
-  animation-delay: 0s;
-}
-
-/* Yorker */
-.mark-2 {
-  top: 50%;
-  left: 60%;
-  animation-delay: 0.6s;
-}
-
-/* Good length */
-.mark-3 {
-  top: 30%;
-  left: 40%;
-  animation-delay: 1.2s;
-}
-
-/* Short ball */
-.mark-4 {
-  top: 60%;
-  left: 70%;
-  animation-delay: 1.8s;
-}
-
-/* Wide full */
-
-@keyframes pop {
-  0% {
-    transform: translate(-50%, -50%) scale(0);
-    opacity: 0;
-  }
-
+  0%,
   20% {
-    transform: translate(-50%, -50%) scale(1.2);
-    opacity: 1;
+    transform: rotate(15deg);
   }
 
-  40% {
-    transform: translate(-50%, -50%) scale(1);
-    opacity: 0.8;
+  80%,
+  100% {
+    transform: rotate(160deg);
+  }
+}
+
+@keyframes raiseArmRight {
+
+  0%,
+  20% {
+    transform: rotate(-15deg);
+  }
+
+  80%,
+  100% {
+    transform: rotate(-160deg);
+  }
+}
+
+@keyframes bounce {
+  0% {
+    transform: translateY(0);
   }
 
   100% {
-    transform: translate(-50%, -50%) scale(0);
-    opacity: 0;
+    transform: translateY(-5px);
   }
 }
 
