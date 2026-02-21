@@ -159,6 +159,22 @@ function bootstrap() {
     dom.userProfileModal.classList.add("hidden");
   });
 
+  dom.userProfileModal.addEventListener("click", (e) => {
+    if (e.target === dom.userProfileModal) {
+      dom.userProfileModal.classList.add("hidden");
+    }
+  });
+
+  dom.closeRosterBtn.addEventListener("click", () => {
+    dom.rosterModal.classList.add("hidden");
+  });
+
+  dom.rosterModal.addEventListener("click", (e) => {
+    if (e.target === dom.rosterModal) {
+      dom.rosterModal.classList.add("hidden");
+    }
+  });
+
   // Waiting for onAuthStateChanged to decide whether to show login or app
 
   onAuthStateChanged(auth, async (authUser) => {
