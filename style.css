@@ -890,6 +890,30 @@ input[readonly] {
   background: var(--accent-gold);
 }
 
+.leaderboard-trophy {
+  position: absolute;
+  bottom: -4px;
+  right: -4px;
+  width: 18px;
+  height: 18px;
+  background: radial-gradient(circle at top right, #ffdf00, #d4af37, #b8860b);
+  border: 1.5px solid #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  z-index: 2;
+  color: #fff;
+}
+
+.leaderboard-trophy svg {
+  width: 9px;
+  height: 9px;
+  fill: #fff;
+  filter: drop-shadow(0 1px 1px rgba(138, 90, 0, 0.6));
+}
+
 .leaderboard-list {
   display: grid;
   gap: 0.62rem;
