@@ -134,6 +134,7 @@ let unsubscribers = [];
 let statusSyncInFlight = false;
 let signedOutNotice = "";
 let deferredInstallPrompt = null;
+let returnToRosterOnProfileClose = false;
 
 bootstrap();
 
@@ -155,23 +156,31 @@ function bootstrap() {
   setupPwaInstall();
   registerServiceWorker();
 
-  dom.closeProfileBtn.addEventListener("click", () => {
+  const closeProfileModal = () => {
     dom.userProfileModal.classList.add("hidden");
-  });
+    if (returnToRosterOnProfileClose) {
+      dom.rosterModal.classList.remove("hidden");
+      returnToRosterOnProfileClose = false;
+    }
+  };
+
+  dom.closeProfileBtn.addEventListener("click", closeProfileModal);
 
   dom.userProfileModal.addEventListener("click", (e) => {
     if (e.target === dom.userProfileModal) {
-      dom.userProfileModal.classList.add("hidden");
+      closeProfileModal();
     }
   });
 
   dom.closeRosterBtn.addEventListener("click", () => {
     dom.rosterModal.classList.add("hidden");
+    returnToRosterOnProfileClose = false;
   });
 
   dom.rosterModal.addEventListener("click", (e) => {
     if (e.target === dom.rosterModal) {
       dom.rosterModal.classList.add("hidden");
+      returnToRosterOnProfileClose = false;
     }
   });
 
@@ -1625,6 +1634,7 @@ function openRosterModal(teamA, teamB, teamAVoters, teamBVoters) {
     row.addEventListener("click", () => {
       const rank = usersSorted.findIndex(u => u.id === user.id) + 1;
       dom.rosterModal.classList.add("hidden");
+      returnToRosterOnProfileClose = true;
       openUserProfileModal(user, rank);
     });
 
