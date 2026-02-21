@@ -790,18 +790,21 @@ function renderMatches() {
     }
 
     if (currentUserIsParticipant) {
-      const voteHelp = document.createElement("p");
-      voteHelp.className = "tiny muted";
+      let helpText = null;
       if (canVote) {
-        voteHelp.textContent = currentPick
-          ? `Your pick: ${currentPick} (editable until start time)`
-          : "No pick yet. Select a team.";
+        if (!currentPick) helpText = "No pick yet. Select a team.";
       } else if (matchStatus === "live") {
-        voteHelp.textContent = "Voting is locked because the match is now live.";
+        helpText = "Voting is locked because the match is now live.";
       } else {
-        voteHelp.textContent = currentPick ? `Final pick: ${currentPick}` : "No pick was submitted.";
+        helpText = currentPick ? `Final pick: ${currentPick}` : "No pick was submitted.";
       }
-      card.appendChild(voteHelp);
+
+      if (helpText) {
+        const voteHelp = document.createElement("p");
+        voteHelp.className = "tiny muted";
+        voteHelp.textContent = helpText;
+        card.appendChild(voteHelp);
+      }
     }
 
     const usersSorted = getParticipantUsers().sort((a, b) => a.username.localeCompare(b.username));
