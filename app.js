@@ -898,12 +898,24 @@ function renderLeaderboard() {
     return;
   }
 
+  let currentRank = 1;
+  let previousScore = null;
+
   usersSorted.forEach((user, index) => {
+    const userScore = Number(user.points) || 0;
+
+    // If not the first user, and the score is lower than the previous score,
+    // the rank becomes the current index + 1 (competition ranking logic).
+    if (previousScore !== null && userScore < previousScore) {
+      currentRank = index + 1;
+    }
+    previousScore = userScore;
+
     const row = document.createElement("div");
     row.className = "leader-row";
     row.style.cursor = "pointer"; // Make it look clickable
     row.addEventListener("click", () => {
-      openUserProfileModal(user, index + 1);
+      openUserProfileModal(user, currentRank);
     });
 
     const left = document.createElement("div");
@@ -911,7 +923,7 @@ function renderLeaderboard() {
 
     const rank = document.createElement("span");
     rank.className = "rank-chip";
-    rank.textContent = `#${index + 1}`;
+    rank.textContent = `#${currentRank}`;
     left.appendChild(rank);
 
     left.appendChild(createAvatarElement(user));
