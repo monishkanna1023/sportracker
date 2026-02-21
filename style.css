@@ -523,6 +523,7 @@ input[readonly] {
 }
 
 .match-card {
+  position: relative;
   border: 1px solid #c3d3f4;
   border-left: 5px solid #123ca4;
   border-radius: var(--radius-md);
@@ -615,6 +616,12 @@ input[readonly] {
   font-weight: 700;
   letter-spacing: 0.4px;
   text-transform: uppercase;
+}
+
+.match-status-badge {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
 }
 
 .badge.upcoming {

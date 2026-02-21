@@ -776,13 +776,13 @@ function renderMatches() {
 
     const time = document.createElement("p");
     time.className = "muted tiny match-start-time";
-    time.textContent = `Start: ${formatDate(match.startTime)} (${countdownText(match.startTime, matchStatus)})`;
+    time.textContent = `${formatDate(match.startTime)} (${countdownText(match.startTime, matchStatus)})`;
     metaRow.appendChild(time);
 
     const status = document.createElement("span");
-    status.className = `badge ${statusClass(matchStatus)}`;
+    status.className = `badge match-status-badge ${statusClass(matchStatus)}`;
     status.textContent = statusLabel(matchStatus);
-    metaRow.appendChild(status);
+    card.appendChild(status);
 
     card.appendChild(metaRow);
 
