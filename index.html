@@ -94,9 +94,22 @@
           <div>
             <h2>Settings</h2>
           </div>
-          <div class="section-user-avatar avatar" title="Profile" style="cursor: pointer;"></div>
         </div>
         <form id="profile-form" class="stack-lg profile-form">
+          <div id="profile-avatar-container" class="settings-profile-header">
+            <div class="settings-avatar-wrapper">
+              <div id="profile-avatar-preview" class="avatar avatar-xl"></div>
+              <button type="button" class="avatar-camera-btn" aria-label="Change profile picture"
+                onclick="document.getElementById('profile-avatar').click()">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path
+                    d="M4 4h3l2-2h6l2 2h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zm8 3a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0 2a3 3 0 1 1 0 6 3 3 0 0 1 0-6z">
+                  </path>
+                </svg>
+              </button>
+            </div>
+            <input type="file" id="profile-avatar" accept="image/*" class="hidden" />
+          </div>
           <label>
             <span>Username</span>
             <input type="text" id="profile-username" readonly />
@@ -106,14 +119,6 @@
             <input type="password" id="profile-password" minlength="6" maxlength="64"
               placeholder="Leave blank to keep current password" />
           </label>
-          <label id="profile-avatar-label">
-            <span>Avatar image</span>
-            <input type="file" id="profile-avatar" accept="image/*" />
-          </label>
-          <div id="profile-preview-row" class="profile-preview-row">
-            <span class="muted tiny">Preview:</span>
-            <div id="profile-avatar-preview" class="avatar avatar-lg"></div>
-          </div>
           <button type="submit" class="btn btn-primary">Save profile</button>
         </form>
         <div class="settings-actions">
@@ -315,8 +320,6 @@
     <div class="modal-content panel text-center" style="max-height: 80vh; overflow-y: auto;">
       <button id="close-roster-btn" class="btn btn-ghost modal-close-btn" type="button">×</button>
       <h2 class="user-name" style="margin-bottom: 0.5rem;">Match Votes</h2>
-      <p class="muted" style="margin-bottom: 1.5rem; font-size: 0.85rem;">Every prediction placed for this fixture.</p>
-
       <div class="roster-columns" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; text-align: left;">
         <div class="roster-col">
           <h3 id="roster-team-a-title" class="lobby-title"

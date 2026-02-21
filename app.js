@@ -79,9 +79,8 @@ const dom = {
   profileUsername: document.querySelector("#profile-username"),
   profilePassword: document.querySelector("#profile-password"),
   profileAvatar: document.querySelector("#profile-avatar"),
-  profileAvatarLabel: document.querySelector("#profile-avatar-label"),
+  profileAvatarContainer: document.querySelector("#profile-avatar-container"),
   profileAvatarPreview: document.querySelector("#profile-avatar-preview"),
-  profilePreviewRow: document.querySelector("#profile-preview-row"),
   createMatchForm: document.querySelector("#create-match-form"),
   teamA: document.querySelector("#team-a"),
   teamB: document.querySelector("#team-b"),
@@ -929,11 +928,8 @@ function renderProfile(user) {
   dom.profilePassword.value = "";
 
   const showAvatarSettings = !isAdminUser(user);
-  if (dom.profileAvatarLabel) {
-    dom.profileAvatarLabel.classList.toggle("hidden", !showAvatarSettings);
-  }
-  if (dom.profilePreviewRow) {
-    dom.profilePreviewRow.classList.toggle("hidden", !showAvatarSettings);
+  if (dom.profileAvatarContainer) {
+    dom.profileAvatarContainer.classList.toggle("hidden", !showAvatarSettings);
   }
 
   if (!showAvatarSettings) {

@@ -798,6 +798,47 @@ input[readonly] {
   height: 58px;
 }
 
+.avatar-xl {
+  width: 96px;
+  height: 96px;
+  font-size: 2.4rem;
+}
+
+.settings-profile-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.settings-avatar-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.avatar-camera-btn {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 32px;
+  height: 32px;
+  background: var(--accent-orange);
+  color: #fff;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  padding: 0.35rem;
+  box-shadow: var(--shadow-soft);
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.avatar-camera-btn:hover {
+  transform: scale(1.05);
+  background: var(--accent-gold);
+}
+
 .leaderboard-list {
   display: grid;
   gap: 0.62rem;
