@@ -101,7 +101,6 @@
       <section id="leaderboard-section" class="panel section-view hidden">
         <div class="section-title-row">
           <h2>Leaderboard</h2>
-          <p class="muted">Points are updated immediately after admin declares results.</p>
         </div>
         <div id="leaderboard-list" class="leaderboard-list"></div>
       </section>
@@ -109,7 +108,6 @@
       <section id="settings-section" class="panel section-view hidden">
         <div class="section-title-row">
           <h2>Settings</h2>
-          <p class="muted">Update profile and access account actions.</p>
         </div>
         <form id="profile-form" class="stack-lg profile-form">
           <label>
@@ -315,6 +313,28 @@
   <script nomodule src="./firebase-config.legacy.js"></script>
   <script nomodule src="./app-legacy.js"></script>
   <script type="module" src="./app.js"></script>
+
+  <!-- Full Roster Modal -->
+  <div id="roster-modal" class="modal-overlay hidden">
+    <div class="modal-content panel text-center" style="max-height: 80vh; overflow-y: auto;">
+      <button id="close-roster-btn" class="btn btn-ghost modal-close-btn" type="button">×</button>
+      <h2 class="user-name" style="margin-bottom: 0.5rem;">Match Votes</h2>
+      <p class="muted" style="margin-bottom: 1.5rem; font-size: 0.85rem;">Every prediction placed for this fixture.</p>
+
+      <div class="roster-columns" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; text-align: left;">
+        <div class="roster-col">
+          <h3 id="roster-team-a-title" class="lobby-title"
+            style="border-bottom: 2px solid #e2e8f0; padding-bottom: 0.5rem; margin-bottom: 1rem;"></h3>
+          <div id="roster-team-a-list" class="stack-sm"></div>
+        </div>
+        <div class="roster-col">
+          <h3 id="roster-team-b-title" class="lobby-title"
+            style="border-bottom: 2px solid #e2e8f0; padding-bottom: 0.5rem; margin-bottom: 1rem;"></h3>
+          <div id="roster-team-b-list" class="stack-sm"></div>
+        </div>
+      </div>
+    </div>
+  </div>
 </body>
 
 </html>

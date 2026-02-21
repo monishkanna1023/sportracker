@@ -109,6 +109,12 @@ const dom = {
   statNemesis: document.querySelector("#stat-nemesis"),
   modalHistoryList: document.querySelector("#modal-history-list"),
   appLoading: document.querySelector("#app-loading"),
+  rosterModal: document.querySelector("#roster-modal"),
+  closeRosterBtn: document.querySelector("#close-roster-btn"),
+  rosterTeamATitle: document.querySelector("#roster-team-a-title"),
+  rosterTeamAList: document.querySelector("#roster-team-a-list"),
+  rosterTeamBTitle: document.querySelector("#roster-team-b-title"),
+  rosterTeamBList: document.querySelector("#roster-team-b-list"),
 };
 
 const state = {
@@ -825,8 +831,8 @@ function renderMatches() {
 
       const lobbyGrid = document.createElement("div");
       lobbyGrid.className = "lobby-team-grid";
-      lobbyGrid.appendChild(createLobbyTeamGroup(teamACode, teamAVoters));
-      lobbyGrid.appendChild(createLobbyTeamGroup(teamBCode, teamBVoters));
+      lobbyGrid.appendChild(createLobbyTeamGroup(teamACode, teamAVoters, teamACode, teamBCode, teamAVoters, teamBVoters));
+      lobbyGrid.appendChild(createLobbyTeamGroup(teamBCode, teamBVoters, teamACode, teamBCode, teamAVoters, teamBVoters));
       card.appendChild(lobbyGrid);
     }
 
@@ -1532,7 +1538,7 @@ function statusClass(status) {
   return "no-result";
 }
 
-function createLobbyTeamGroup(teamCode, voters) {
+function createLobbyTeamGroup(teamCode, voters, teamA, teamB, teamAVoters, teamBVoters) {
   const group = document.createElement("div");
   group.className = "lobby-team-group-minimal";
 
@@ -1541,6 +1547,10 @@ function createLobbyTeamGroup(teamCode, voters) {
   }
 
   const stack = createLobbyAvatarStack(voters, 4);
+  stack.style.cursor = "pointer";
+  stack.addEventListener("click", () => {
+    openRosterModal(teamA, teamB, teamAVoters, teamBVoters);
+  });
   group.appendChild(stack);
 
   return group;
@@ -1567,6 +1577,51 @@ function createLobbyAvatarStack(voters, limit) {
   }
 
   return stack;
+}
+
+function openRosterModal(teamA, teamB, teamAVoters, teamBVoters) {
+  dom.rosterTeamATitle.textContent = `${teamA} (${teamAVoters.length})`;
+  dom.rosterTeamBTitle.textContent = `${teamB} (${teamBVoters.length})`;
+
+  dom.rosterTeamAList.innerHTML = "";
+  teamAVoters.forEach(user => {
+    const row = document.createElement("div");
+    row.className = "leader-row";
+    row.style.padding = "0.4rem 0.6rem";
+
+    const left = document.createElement("div");
+    left.className = "leader-left";
+    left.appendChild(createAvatarElement(user));
+
+    const nameSpan = document.createElement("span");
+    nameSpan.className = "leader-name";
+    nameSpan.textContent = user.username;
+    left.appendChild(nameSpan);
+
+    row.appendChild(left);
+    dom.rosterTeamAList.appendChild(row);
+  });
+
+  dom.rosterTeamBList.innerHTML = "";
+  teamBVoters.forEach(user => {
+    const row = document.createElement("div");
+    row.className = "leader-row";
+    row.style.padding = "0.4rem 0.6rem";
+
+    const left = document.createElement("div");
+    left.className = "leader-left";
+    left.appendChild(createAvatarElement(user));
+
+    const nameSpan = document.createElement("span");
+    nameSpan.className = "leader-name";
+    nameSpan.textContent = user.username;
+    left.appendChild(nameSpan);
+
+    row.appendChild(left);
+    dom.rosterTeamBList.appendChild(row);
+  });
+
+  dom.rosterModal.classList.remove("hidden");
 }
 
 function createMatchTitleElement(teamA, teamB, winnerCode = "") {
