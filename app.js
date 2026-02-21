@@ -935,7 +935,7 @@ function renderProfile(user) {
     return;
   }
 
-  dom.profileUsername.value = user.username;
+  dom.profileUsername.textContent = user.username;
   dom.profilePassword.value = "";
 
   const showAvatarSettings = !isAdminUser(user);
