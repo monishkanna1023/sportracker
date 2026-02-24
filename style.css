@@ -431,7 +431,7 @@ input[readonly] {
   right: 10%;
   bottom: calc(0.82rem + env(safe-area-inset-bottom));
   z-index: 120;
-  display: none;
+  display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   align-items: stretch;
   gap: 0.28rem;
@@ -952,8 +952,7 @@ input[readonly] {
 }
 
 .profile-form {
-  width: min(460px, 100%);
-  margin: 0;
+  width: 100%;
 }
 
 .profile-form>.btn {
@@ -1258,10 +1257,6 @@ input[readonly] {
     display: none;
   }
 
-  .mobile-tabbar {
-    display: grid;
-  }
-
 }
 
 @media (min-width: 700px) {
@@ -1290,12 +1285,6 @@ input[readonly] {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-}
-
-@media (min-width: 821px) {
-  .mobile-tabbar {
-    display: none !important;
-  }
 }
 
 @media (min-width: 920px) {
